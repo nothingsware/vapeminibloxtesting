@@ -680,7 +680,7 @@ function modifyCode(text) {
 
 			// Fly
 			let flyValue, flyVert, flyBypass;
-const fly = new Module("Fly", function(callback) {
+         const fly = new Module("Fly", function(callback) {
     if (callback) {
         let ticks = 0;
         tickLoop["Fly"] = function() {
@@ -705,7 +705,7 @@ const fly = new Module("Fly", function(callback) {
                 player$1.motion.y = -flyVert[1];
             } else {
                 // Alternate vertical motion for smoother flight
-                player$1.motion.y = (ticks % 4 < 2) ? 0.13 : -0.13;
+                player$1.motion.y = (ticks % 4 < 2) ? 0.15 : -0.15;
             }
         };
     } else {
