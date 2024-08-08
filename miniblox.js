@@ -587,6 +587,81 @@ function getTeam(entity) {
     return entry ? (entry.color !== "white" ? entry.color : undefined) : undefined;
 }
 
+// Killaura Module
+let attackDelay = Date.now();
+let didSwing = false;
+let attacked = 0;
+let attackedPlayers = {};
+let attackList = [];
+let boxMeshes = [];
+let killaurarange, killaurablock, killaurabox, killauraangle, killaurawall, killauraSmoothYaw;
+let yawTarget = null;
+
+function killauraAttack(entity, isFirstAttack) {
+    if (Date.now() > attackDelay) {
+        const aimPos = player$1.pos.clone().sub(entity.pos);
+        const newYaw = wrapAngleTo180_radians(Math.atan2(aimPos.x, aimPos.z) - player$1.yaw);
+
+        if (isFirstAttack && killauraSmoothYaw[1]) {
+            yawTarget = player$1.yaw + newYaw;
+        }
+
+        if (Math.abs(newYaw) < degToRad(30)) {
+            attackedPlayers[entity.id] = Date.now() + 100;
+
+            if (!didSwing) {
+                hud3D.swingArm();
+                ClientSocket.sendPacket(new SPacketClick({}));
+                didSwing = true;
+            }
+
+            attacked++;
+            playerControllerMP.syncCurrentPlayItem();
+            ClientSocket.sendPacket(new SPacketUseEntity({
+                id: entity.id,
+                action: 1,
+                hitVec: new PBVector3({ x: 0, y: 0, z: 0 })
+            }));
+            player$1.attackTargetEntityWithCurrentItem(entity);
+        }
+    }
+}
+
+function block() {
+    if (Date.now() > attackDelay) {
+        attackDelay = Date.now() + Math.round(attacked / 2) * 100;
+    }
+
+    const item = player$1.inventory.getCurrentItem();
+    if (item && item.getItem() instanceof ItemSword && killaurablock[1]) {
+        if (!blocking) {
+            playerControllerMP.syncCurrentPlayItem();
+            ClientSocket.sendPacket(new SPacketUseItem());
+            blocking = true;
+        }
+    } else {
+        blocking = false;
+    }
+}
+
+function unblock() {
+    const item = player$1.inventory.getCurrentItem();
+    if (blocking && item && item.getItem() instanceof ItemSword) {
+        playerControllerMP.syncCurrentPlayItem();
+        ClientSocket.sendPacket(new SPacketPlayerAction({
+            position: BlockPos.ORIGIN.toProto(),
+            facing: EnumFacing.DOWN.getIndex(),
+            action: PBAction.RELEASE_USE_ITEM
+        }));
+    }
+    blocking = false;
+}
+
+function getTeam(entity) {
+    const entry = game$1.playerList.playerDataMap.get(entity.id);
+    return entry ? (entry.color !== "white" ? entry.color : undefined) : undefined;
+}
+
 const killaura = new Module("Killaura", function(callback) {
     if (callback) {
         // Initialize attack indicators
@@ -632,7 +707,12 @@ const killaura = new Module("Killaura", function(callback) {
                 block();
             } else {
                 unblock();
-                sendYaw = false;
+                yawTarget = null;
+            }
+
+            // Smooth Yaw Adjustment
+            if (killauraSmoothYaw[1] && yawTarget !== null) {
+                player$1.yaw += (yawTarget - player$1.yaw) * 0.2; // Adjust this factor for faster/slower turning
             }
         };
 
@@ -652,7 +732,7 @@ const killaura = new Module("Killaura", function(callback) {
         renderTickLoop["Killaura"] = undefined;
         boxMeshes.forEach(box => box.visible = false);
         boxMeshes.length = 0;
-        sendYaw = false;
+        yawTarget = null;
         unblock();
     }
 });
@@ -663,6 +743,8 @@ killauraangle = killaura.addoption("Angle", Number, 360);
 killaurablock = killaura.addoption("AutoBlock", Boolean, true);
 killaurawall = killaura.addoption("Wallcheck", Boolean, false);
 killaurabox = killaura.addoption("Box", Boolean, true);
+killauraSmoothYaw = killaura.addoption("SmoothYaw", Boolean, true); // New option to control smooth yaw
+
  
 			new Module("FastBreak", function() {});
 
