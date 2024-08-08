@@ -61,7 +61,7 @@ function modifyCode(text) {
 		});
 	`);
 
-	addReplacement('VERSION$1," | ",', '"Vape V4 v1.0.3"," | ",');
+	addReplacement('VERSION$1," | ",', '"Vape V4 v1.0.2"," | ",');
 
 	// DRAWING SETUP
 	addReplacement('ut(this,"glintTexture");', `
@@ -509,8 +509,9 @@ function modifyCode(text) {
 					}
 				} else tickLoop["WTap"] = undefined;
 			})
- 
-            // Killaura Module
+
+			// Killaura
+		   // Killaura Module
 let attackDelay = Date.now();
 let didSwing = false;
 let attacked = 0;
@@ -668,7 +669,9 @@ killaurawall = killaura.addoption("Wallcheck", Boolean, false);
 killaurabox = killaura.addoption("Box", Boolean, true);
 killauraSmoothYaw = killaura.addoption("SmoothYaw", Boolean, true); // New option to control smooth yaw
 
- 
+
+
+		
 			new Module("FastBreak", function() {});
 
 			function getMoveDirection(moveSpeed) {
@@ -683,8 +686,9 @@ killauraSmoothYaw = killaura.addoption("SmoothYaw", Boolean, true); // New optio
 				}
 				return new Vector3$1(0, 0, 0);
 			}
-             
-let flyValue, flyVert, flyBypass;
+
+			// Fly
+			let flyValue, flyVert, flyBypass;
 
 const fly = new Module("Fly", function(callback) {
     if (callback) {
@@ -739,7 +743,6 @@ const fly = new Module("Fly", function(callback) {
 flyBypass = fly.addoption("Bypass", Boolean, true);
 flyValue = fly.addoption("Speed", Number, 2);
 flyVert = fly.addoption("Vertical", Number, 0.7);
-
 
 			new Module("InvWalk", function() {});
 			new Module("KeepSprint", function() {});
