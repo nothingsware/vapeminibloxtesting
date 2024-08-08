@@ -61,7 +61,7 @@ function modifyCode(text) {
 		});
 	`);
 
-	addReplacement('VERSION$1," | ",', '"Fun V4 v1.0.3"," | ",');
+	addReplacement('VERSION$1," | ",', '"Vape V4 v1.0.3"," | ",');
 
 	// DRAWING SETUP
 	addReplacement('ut(this,"glintTexture");', `
@@ -509,85 +509,8 @@ function modifyCode(text) {
 					}
 				} else tickLoop["WTap"] = undefined;
 			})
-
-		   // Killaura Module
-let attackDelay = Date.now();
-let didSwing = false;
-let attacked = 0;
-let attackedPlayers = {};
-let attackList = [];
-let boxMeshes = [];
-let killaurarange, killaurablock, killaurabox, killauraangle, killaurawall;
-
-function killauraAttack(entity, isFirstAttack) {
-    if (Date.now() > attackDelay) {
-        const aimPos = player$1.pos.clone().sub(entity.pos);
-        const newYaw = wrapAngleTo180_radians(Math.atan2(aimPos.x, aimPos.z) - player$1.lastReportedYaw);
-        const checkYaw = wrapAngleTo180_radians(Math.atan2(aimPos.x, aimPos.z) - player$1.yaw);
-
-        if (isFirstAttack) {
-            sendYaw = Math.abs(checkYaw) > degToRad(30) && Math.abs(checkYaw) < degToRad(killauraangle[1]) 
-                ? player$1.lastReportedYaw + newYaw 
-                : false;
-        }
-
-        if (Math.abs(newYaw) < degToRad(30)) {
-            attackedPlayers[entity.id] = Date.now() + 100;
-            
-            if (!didSwing) {
-                hud3D.swingArm();
-                ClientSocket.sendPacket(new SPacketClick({}));
-                didSwing = true;
-            }
-
-            attacked++;
-            playerControllerMP.syncCurrentPlayItem();
-            ClientSocket.sendPacket(new SPacketUseEntity({
-                id: entity.id,
-                action: 1,
-                hitVec: new PBVector3({ x: 0, y: 0, z: 0 })
-            }));
-            player$1.attackTargetEntityWithCurrentItem(entity);
-        }
-    }
-}
-
-function block() {
-    if (Date.now() > attackDelay) {
-        attackDelay = Date.now() + Math.round(attacked / 2) * 100;
-    }
-
-    const item = player$1.inventory.getCurrentItem();
-    if (item && item.getItem() instanceof ItemSword && killaurablock[1]) {
-        if (!blocking) {
-            playerControllerMP.syncCurrentPlayItem();
-            ClientSocket.sendPacket(new SPacketUseItem());
-            blocking = true;
-        }
-    } else {
-        blocking = false;
-    }
-}
-
-function unblock() {
-    const item = player$1.inventory.getCurrentItem();
-    if (blocking && item && item.getItem() instanceof ItemSword) {
-        playerControllerMP.syncCurrentPlayItem();
-        ClientSocket.sendPacket(new SPacketPlayerAction({
-            position: BlockPos.ORIGIN.toProto(),
-            facing: EnumFacing.DOWN.getIndex(),
-            action: PBAction.RELEASE_USE_ITEM
-        }));
-    }
-    blocking = false;
-}
-
-function getTeam(entity) {
-    const entry = game$1.playerList.playerDataMap.get(entity.id);
-    return entry ? (entry.color !== "white" ? entry.color : undefined) : undefined;
-}
-
-// Killaura Module
+ 
+            // Killaura Module
 let attackDelay = Date.now();
 let didSwing = false;
 let attacked = 0;
