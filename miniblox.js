@@ -62,8 +62,6 @@ function modifyCode(text) {
 	`);
 
 	addReplacement('VERSION$1," | ",', '"Fun V4 v1.0.3"," | ",');
-
-	// DRAWING SETUP
 	addReplacement('ut(this,"glintTexture");', `
 		ut(this, "vapeTexture");
 		ut(this, "v4Texture");
