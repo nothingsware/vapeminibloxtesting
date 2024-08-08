@@ -677,20 +677,24 @@ function modifyCode(text) {
 				}
 				return new Vector3$1(0, 0, 0);
 			}
-
-			// Fly
-			let flyValue, flyVert, flyBypass;
-         const fly = new Module("Fly", function(callback) {
+            let flyValue, flyVert, flyBypass;
+const fly = new Module("Fly", function(callback) {
     if (callback) {
         let ticks = 0;
         tickLoop["Fly"] = function() {
             ticks++;
 
-            // Handle packet bypass
-            if (ticks % 5 === 0 && flyBypass[1]) {
-                for (let i = 0; i < 5; i++) {
-                    ClientSocket.sendPacket(new SPacketPlayerPosLook({onGround: false}));
-                }
+            // Improved packet bypass mechanism
+            if (flyBypass[1] && ticks % 5 === 0) {
+                const packet = new SPacketPlayerPosLook({
+                    x: player$1.posX,
+                    y: player$1.posY,
+                    z: player$1.posZ,
+                    yaw: player$1.rotationYaw,
+                    pitch: player$1.rotationPitch,
+                    onGround: false
+                });
+                ClientSocket.sendPacket(packet);
             }
 
             // Get the movement direction and apply motion
